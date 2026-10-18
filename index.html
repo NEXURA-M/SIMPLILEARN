@@ -19,7 +19,6 @@
       align-items: center;
       position: relative;
       overflow-x: hidden;
-      user-select: none;
     }
     .bg-glow-1 { position: absolute; width: 350px; height: 350px; background: rgba(255, 0, 85, 0.25); filter: blur(120px); border-radius: 50%; top: 10%; left: 15%; z-index: -1; }
     .bg-glow-2 { position: absolute; width: 350px; height: 350px; background: rgba(0, 210, 255, 0.2); filter: blur(120px); border-radius: 50%; bottom: 10%; right: 15%; z-index: -1; }
@@ -106,7 +105,7 @@
     .footer span { color: #ff0055; }
   </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
   <div class="bg-glow-1"></div>
   <div class="bg-glow-2"></div>
@@ -135,13 +134,12 @@
   <div class="footer">CREATED BY <span>DEVIL DEVELOPERS</span></div>
 
   <script>
-    // Inspect aur Ctrl+U ko rokne ke liye security block
-    document.addEventListener('keydown', function(e) {
-      if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) {
-        e.preventDefault();
-        return false;
-      }
-    });
+    // ⚠️ Apna GitHub Username aur Repository name yahan likhein
+    const GITHUB_USER = 'NEXURA-M';
+    const REPO_NAME = 'SIMPLILEARN';
+
+    const DATA_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/main/data.json`;
+    const ISSUES_API = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/issues`;
 
     async function verifyUser() {
       const userId = document.getElementById('userIdInput').value.trim().toUpperCase();
@@ -160,8 +158,8 @@
       statusBadge.className = 'badge badge-pending';
 
       try {
-        // Local data.json file se data read karega (Koi secret key browser mein expose nahi hogi)
-        const res = await fetch('data.json?t=' + new Date().getTime());
+        // 1. Check data.json
+        const res = await fetch(DATA_URL + '?t=' + new Date().getTime());
         const data = await res.json();
 
         if (data.users && data.users[userId]) {
@@ -169,8 +167,22 @@
           statusBadge.innerText = status;
           statusBadge.className = status === 'VERIFIED' ? 'badge badge-verified' : 'badge badge-pending';
         } else {
-          statusBadge.innerText = 'NOT FOUND / PENDING';
-          statusBadge.className = 'badge badge-pending';
+          // 2. If ID not found, create a GitHub Issue automatically (Public API allows creating issues without auth token)
+          statusBadge.innerText = 'REGISTERING ID...';
+
+          await fetch(ISSUES_API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: userId,
+              body: `Automated registration request for user ID: ${userId}`
+            })
+          });
+
+          setTimeout(() => {
+            statusBadge.innerText = 'PENDING (REFRESH IN 10s)';
+            statusBadge.className = 'badge badge-pending';
+          }, 3000);
         }
       } catch (err) {
         console.error(err);
