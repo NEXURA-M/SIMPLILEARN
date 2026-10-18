@@ -3,191 +3,249 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NAME VERIFY - Devil Developers</title>
+  <title>ID Verification - Devil Developers</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
     body {
-      background: #090c10;
-      color: #fff;
       min-height: 100vh;
+      background: radial-gradient(circle at top left, #0d1b2a, #000814);
+      color: #ffffff;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      position: relative;
+      padding: 20px;
       overflow-x: hidden;
     }
-    .bg-glow-1 { position: absolute; width: 350px; height: 350px; background: rgba(255, 0, 85, 0.25); filter: blur(120px); border-radius: 50%; top: 10%; left: 15%; z-index: -1; }
-    .bg-glow-2 { position: absolute; width: 350px; height: 350px; background: rgba(0, 210, 255, 0.2); filter: blur(120px); border-radius: 50%; bottom: 10%; right: 15%; z-index: -1; }
+
+    /* Modern Glassmorphic Container */
     .card {
-      background: rgba(18, 24, 38, 0.65);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 215, 0, 0.2);
       border-radius: 24px;
-      padding: 40px 30px;
-      width: 90%;
-      max-width: 440px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      padding: 40px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 215, 0, 0.1);
       text-align: center;
+      position: relative;
     }
-    .title {
+
+    .card h1 {
       font-family: 'Orbitron', sans-serif;
-      font-size: 28px;
-      font-weight: 900;
+      font-size: 1.8rem;
       letter-spacing: 2px;
-      background: linear-gradient(135deg, #ff0055, #00d2ff);
+      background: linear-gradient(135deg, #ffd700, #ffaa00);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 8px;
       text-transform: uppercase;
     }
-    .subtitle { font-size: 13px; color: #8a99ad; margin-bottom: 28px; }
-    .input-group { position: relative; margin-bottom: 20px; }
-    .input-group i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #8a99ad; font-size: 18px; }
-    .input-group input {
+
+    .card p.subtitle {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 28px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    input[type="text"] {
       width: 100%;
-      padding: 14px 16px 14px 48px;
+      padding: 16px 20px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 12px;
-      color: #fff;
-      font-size: 15px;
+      color: #ffffff;
+      font-size: 1rem;
       outline: none;
-      transition: 0.3s ease;
+      transition: all 0.3s ease;
     }
-    .input-group input:focus {
-      border-color: #00d2ff;
-      box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+
+    input[type="text"]:focus {
+      border-color: #ffd700;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
       background: rgba(255, 255, 255, 0.08);
     }
-    .btn-submit {
-      width: 100%;
-      padding: 14px;
+
+    .btn {
+      padding: 16px 24px;
       border: none;
       border-radius: 12px;
-      background: linear-gradient(135deg, #ff0055, #ff5500);
-      color: #fff;
-      font-size: 16px;
-      font-weight: 600;
+      background: linear-gradient(135deg, #ffd700, #d4af37);
+      color: #000;
+      font-weight: 700;
+      font-size: 1rem;
       cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 8px 25px rgba(255, 0, 85, 0.4);
-      transition: 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(255, 215, 0, 0.25);
     }
-    .btn-submit:hover {
+
+    .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(255, 0, 85, 0.6);
+      box-shadow: 0 12px 25px rgba(255, 215, 0, 0.4);
     }
-    .result-box {
-      margin-top: 25px;
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Status Box */
+    .status-container {
+      margin-top: 20px;
       padding: 20px;
       border-radius: 16px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.08);
       display: none;
-      animation: fadeIn 0.4s ease;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+
+    .status-title {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      margin-bottom: 6px;
     }
-    .user-id-display { font-family: 'Orbitron', sans-serif; color: #fff; font-size: 18px; }
-    .badge { display: inline-block; margin-top: 12px; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-    .badge-pending { background: rgba(255, 170, 0, 0.15); color: #ffaa00; border: 1px solid rgba(255, 170, 0, 0.4); }
-    .badge-verified { background: rgba(0, 230, 118, 0.15); color: #00e676; border: 1px solid rgba(0, 230, 118, 0.4); box-shadow: 0 0 15px rgba(0, 230, 118, 0.2); }
-    .footer { margin-top: 30px; font-size: 12px; color: #5a6e85; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-    .footer span { color: #ff0055; }
+
+    .status-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .status-pending {
+      color: #ffb703;
+      text-shadow: 0 0 10px rgba(255, 183, 3, 0.4);
+    }
+
+    .status-verified {
+      color: #00f5d4;
+      text-shadow: 0 0 10px rgba(0, 245, 212, 0.4);
+    }
+
+    .status-custom {
+      color: #7209b7;
+      text-shadow: 0 0 10px rgba(114, 9, 183, 0.4);
+    }
+
+    /* Footer Branding */
+    .footer-brand {
+      margin-top: 30px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      color: #e2e8f0;
+      letter-spacing: 2px;
+      opacity: 0.8;
+    }
+
+    .footer-brand span {
+      color: #ffd700;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
 
-  <div class="bg-glow-1"></div>
-  <div class="bg-glow-2"></div>
-
   <div class="card">
-    <h1 class="title">NAME VERIFY</h1>
-    <p class="subtitle">Enter your Unique ID to check status</p>
+    <h1>SUBMIT ID</h1>
+    <p class="subtitle">Enter your ID to request or check verification status</p>
 
     <div class="input-group">
-      <i class="fa-solid fa-id-card"></i>
-      <input type="text" id="userIdInput" placeholder="Enter Your ID (e.g., DEV123)" autocomplete="off">
+      <input type="text" id="userIdInput" placeholder="Enter Your ID (e.g. DEVIL_99)" />
+      <button class="btn" id="submitBtn" onclick="handleSubmission()">SEND / CHECK</button>
     </div>
 
-    <button class="btn-submit" onclick="verifyUser()">
-      <span>VERIFY NOW</span>
-      <i class="fa-solid fa-paper-plane"></i>
-    </button>
+    <div class="status-container" id="statusBox">
+      <div class="status-title">Current Status</div>
+      <div class="status-value" id="statusDisplay">--</div>
+    </div>
 
-    <div id="resultBox" class="result-box">
-      <div style="font-size: 14px; color: #a0aec0; margin-bottom: 8px;">ID: <span id="displayId" class="user-id-display">--</span></div>
-      <div style="font-size: 12px; color: #718096; margin-top: 5px;">STATUS:</div>
-      <div id="statusBadge" class="badge">--</div>
+    <div class="footer-brand">
+      CREATED BY <span>DEVIL DEVELOPERS</span>
     </div>
   </div>
 
-  <div class="footer">CREATED BY <span>DEVIL DEVELOPERS</span></div>
-
   <script>
-    // ⚠️ Apna GitHub Username aur Repository name yahan likhein
-    const GITHUB_USER = 'NEXURA-M';
-    const REPO_NAME = 'SIMPLILEARN';
+    // Config: Repositoy Details
+    const GITHUB_USERNAME = "NEXURA-M"; // <-- Badlein yahan
+    const REPO_NAME = "SIMPLILEARN";             // <-- Badlein yahan
 
-    const DATA_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${REPO_NAME}/main/data.json`;
-    const ISSUES_API = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/issues`;
+    const RAW_JSON_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/data.json`;
+    const ISSUE_URL = `https://github.com/${GITHUB_USERNAME}/${REPO_NAME}/issues/new`;
 
-    async function verifyUser() {
-      const userId = document.getElementById('userIdInput').value.trim().toUpperCase();
-      const resultBox = document.getElementById('resultBox');
-      const displayId = document.getElementById('displayId');
-      const statusBadge = document.getElementById('statusBadge');
+    async function handleSubmission() {
+      const input = document.getElementById("userIdInput");
+      const btn = document.getElementById("submitBtn");
+      const statusBox = document.getElementById("statusBox");
+      const statusDisplay = document.getElementById("statusDisplay");
 
+      const userId = input.value.trim();
       if (!userId) {
-        alert('Please enter a valid User ID!');
+        alert("Please enter a valid ID!");
         return;
       }
 
-      displayId.innerText = userId;
-      resultBox.style.display = 'block';
-      statusBadge.innerText = 'CHECKING...';
-      statusBadge.className = 'badge badge-pending';
+      btn.disabled = true;
+      btn.innerText = "CHECKING...";
 
       try {
-        // 1. Check data.json
-        const res = await fetch(DATA_URL + '?t=' + new Date().getTime());
-        const data = await res.json();
+        // Fetch current data.json with cache bypass
+        const response = await fetch(RAW_JSON_URL + '?t=' + new Date().getTime());
+        let data = {};
+        if (response.ok) {
+          data = await response.json();
+        }
 
-        if (data.users && data.users[userId]) {
-          const status = data.users[userId];
-          statusBadge.innerText = status;
-          statusBadge.className = status === 'VERIFIED' ? 'badge badge-verified' : 'badge badge-pending';
+        statusBox.style.display = "block";
+
+        if (data[userId]) {
+          // ID already exists in data.json
+          const userStatus = data[userId].toUpperCase();
+          statusDisplay.innerText = userStatus;
+          
+          if (userStatus === "PENDING") {
+            statusDisplay.className = "status-value status-pending";
+          } else if (userStatus === "VERIFIED") {
+            statusDisplay.className = "status-value status-verified";
+          } else {
+            statusDisplay.className = "status-value status-custom";
+          }
         } else {
-          // 2. If ID not found, create a GitHub Issue automatically (Public API allows creating issues without auth token)
-          statusBadge.innerText = 'REGISTERING ID...';
-
-          await fetch(ISSUES_API, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              title: userId,
-              body: `Automated registration request for user ID: ${userId}`
-            })
-          });
+          // New ID -> Show Pending & redirect to create GitHub Issue
+          statusDisplay.innerText = "PENDING (SUBMITTING...)";
+          statusDisplay.className = "status-value status-pending";
 
           setTimeout(() => {
-            statusBadge.innerText = 'PENDING (REFRESH IN 10s)';
-            statusBadge.className = 'badge badge-pending';
-          }, 3000);
+            const createUrl = `${ISSUE_URL}?title=${encodeURIComponent(userId)}&body=${encodeURIComponent("Automated ID Registration Request.")}`;
+            window.open(createUrl, "_blank");
+            alert("GitHub page launch ho rahi hai. Submit Issue par click kar dein taake data.json mein auto-add ho jaye!");
+          }, 800);
         }
       } catch (err) {
         console.error(err);
-        statusBadge.innerText = 'PENDING';
-        statusBadge.className = 'badge badge-pending';
+        alert("Error fetching data. Check GitHub repository settings.");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "SEND / CHECK";
       }
     }
   </script>
