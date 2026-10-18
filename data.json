@@ -1,5 +1,4 @@
 {
-  "users": {
-    "TAQI": "VERIFIED"
-  }
+  "USER123": "VERIFIED",
+  "TEST456": "PENDING"
 }
