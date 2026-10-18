@@ -184,70 +184,8 @@
     </div>
   </div>
 
-  <script>
-    // Config: Repositoy Details
-    const GITHUB_USERNAME = "NEXURA-M"; // <-- Badlein yahan
-    const REPO_NAME = "SIMPLILEARN";             // <-- Badlein yahan
-
-    const RAW_JSON_URL = `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${REPO_NAME}/main/data.json`;
-    const ISSUE_URL = `https://github.com/${GITHUB_USERNAME}/${REPO_NAME}/issues/new`;
-
-    async function handleSubmission() {
-      const input = document.getElementById("userIdInput");
-      const btn = document.getElementById("submitBtn");
-      const statusBox = document.getElementById("statusBox");
-      const statusDisplay = document.getElementById("statusDisplay");
-
-      const userId = input.value.trim();
-      if (!userId) {
-        alert("Please enter a valid ID!");
-        return;
-      }
-
-      btn.disabled = true;
-      btn.innerText = "CHECKING...";
-
-      try {
-        // Fetch current data.json with cache bypass
-        const response = await fetch(RAW_JSON_URL + '?t=' + new Date().getTime());
-        let data = {};
-        if (response.ok) {
-          data = await response.json();
-        }
-
-        statusBox.style.display = "block";
-
-        if (data[userId]) {
-          // ID already exists in data.json
-          const userStatus = data[userId].toUpperCase();
-          statusDisplay.innerText = userStatus;
-          
-          if (userStatus === "PENDING") {
-            statusDisplay.className = "status-value status-pending";
-          } else if (userStatus === "VERIFIED") {
-            statusDisplay.className = "status-value status-verified";
-          } else {
-            statusDisplay.className = "status-value status-custom";
-          }
-        } else {
-          // New ID -> Show Pending & redirect to create GitHub Issue
-          statusDisplay.innerText = "PENDING (SUBMITTING...)";
-          statusDisplay.className = "status-value status-pending";
-
-          setTimeout(() => {
-            const createUrl = `${ISSUE_URL}?title=${encodeURIComponent(userId)}&body=${encodeURIComponent("Automated ID Registration Request.")}`;
-            window.open(createUrl, "_blank");
-            alert("GitHub page launch ho rahi hai. Submit Issue par click kar dein taake data.json mein auto-add ho jaye!");
-          }, 800);
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Error fetching data. Check GitHub repository settings.");
-      } finally {
-        btn.disabled = false;
-        btn.innerText = "SEND / CHECK";
-      }
-    }
-  </script>
+  
+  <!-- Yeh placeholder GitHub Actions replace kar dega -->
+    <!-- INJECT_SCRIPT_HERE -->
 </body>
 </html>
