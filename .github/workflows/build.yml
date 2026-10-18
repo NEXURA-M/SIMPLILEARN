@@ -1,0 +1,78 @@
+name: Secure Build and Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install JavaScript Obfuscator
+        run: npm install -g javascript-obfuscator
+
+      - name: Inject and Obfuscate Script into HTML
+        env:
+          RAW_SCRIPT: ${{ secrets.MY_SECURE_SCRIPT }}
+        run: |
+          # 1. Secret script ko file mein save karein
+          echo "$RAW_SCRIPT" > raw_script.js
+
+          # 2. Obfuscate karein
+          javascript-obfuscator raw_script.js --output protected_script.js \
+            --compact true \
+            --control-flow-flattening true \
+            --dead-code-injection true \
+            --string-array true \
+            --string-array-encoding 'base64'
+
+          # 3. Node.js ke zariye safely HTML mein inject karein (Python error se bachne ke liye)
+          node -e '
+            const fs = require("fs");
+            let html = fs.readFileSync("index.html", "utf8");
+            let scriptCode = fs.readFileSync("protected_script.js", "utf8");
+            
+            let scriptTag = "<script>\n" + scriptCode + "\n</script>";
+            
+            if (html.includes("<!-- INJECT_SCRIPT_HERE -->")) {
+                html = html.replace("<!-- INJECT_SCRIPT_HERE -->", scriptTag);
+            } else {
+                html = html + "\n" + scriptTag;
+            }
+            
+            fs.writeFileSync("index.html", html, "utf8");
+            console.log("Script successfully injected into index.html");
+          '
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
