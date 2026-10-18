@@ -1,0 +1,31 @@
+name: Auto Add ID from Issue
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+
+jobs:
+  add-to-json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Update data.json
+        run: |
+          ISSUE_TITLE="${{ github.event.issue.title }}"
+          USER_ID=$(echo "$ISSUE_TITLE" | xargs | tr '[:lower:]' '[:upper:]')
+          
+          FILE="data.json"
+          if [ ! -f "$FILE" ]; then
+            echo '{"users": {}}' > "$FILE"
+          fi
+
+          node -e '
+            const fs = "fs";
+            const file = "data.json";
+            // logic to update json securely via action
+          '
