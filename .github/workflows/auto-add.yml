@@ -25,7 +25,22 @@ jobs:
           fi
 
           node -e '
-            const fs = "fs";
+            const fs = require("fs");
             const file = "data.json";
-            // logic to update json securely via action
-          '
+            let data = JSON.parse(fs.readFileSync(file, "utf8"));
+            if (!data.users) data.users = {};
+            const id = process.argv[1];
+            if (!data.users[id]) {
+              data.users[id] = "PENDING";
+              fs.writeFileSync(file, JSON.stringify(data, null, 2));
+              console.log("Added ID: " + id);
+            }
+          ' "$USER_ID"
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "action@github.com"
+          git add data.json
+          git commit -m "Auto-added user ID from GitHub Issue" || exit 0
+          git push
