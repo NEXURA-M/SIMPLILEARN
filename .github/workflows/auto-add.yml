@@ -1,47 +1,54 @@
-name: Update Data JSON
+name: Sync Registrations (LMO)
 
 on:
   issues:
-    types: [opened]
+    types: [opened, edited, reopened, closed]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'
 
-jobs: 
-  update-json:
+concurrency:
+  group: lumina-lmo-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      issues: read
+
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update data.json with new User ID
-        run: |
-          ISSUE_TITLE="${{ github.event.issue.title }}"
-          USER_ID=$(echo "$ISSUE_TITLE" | sed 's/SUBMIT_ID: //g' | xargs)
-          
-          if [ -n "$USER_ID" ]; then
-            # Read existing JSON or fallback to empty object
-            if [ -f data.json ]; then
-              cat data.json > temp.json
-            else
-              echo "{}" > temp.json
-            fi
-            
-            # Add or Update ID with PENDING status using node
-            node -e '
-              const fs = require("fs");
-              let data = {};
-              try { data = JSON.parse(fs.readFileSync("temp.json")); } catch(e){}
-              const id = process.env.USER_ID;
-              if(!data[id]) { data[id] = "PENDING"; }
-              fs.writeFileSync("data.json", JSON.stringify(data, null, 2));
-            '
-            rm temp.json
-          fi
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install @octokit/rest
+
+      - name: Run sync script
         env:
-          USER_ID: ${{ github.event.issue.title }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: node scripts/sync.js
 
-      - name: Commit and Push Changes
+      - name: Commit and push changes
         run: |
-          git config --global user.name "GitHub Action"
-          git config --global user.email "action@github.com"
-          git add data.json
-          git commit -m "Auto-add new ID from Issue" || exit 0
-          git push
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add register.json
+          if git diff --staged --quiet; then
+            echo "✅ No changes to commit"
+          else
+            git commit -m "🤖 Auto-sync registrations [skip ci]"
+            git push
+            echo "✅ Pushed updated register.json"
+          fi
